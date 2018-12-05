@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 
 app.set('view engine', 'ejs');
 // middleware
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(methodOverride('_method'));
@@ -50,7 +51,10 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  var templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -94,6 +98,7 @@ app.put('/urls/:id', (req, res) => {
   const { id } = req.params;
   const { longURL } = req.body;
   urlDB[id] = longURL;
+  console.log(urlDB);
   res.redirect('/urls');
 });
 

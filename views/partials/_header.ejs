@@ -1,14 +1,26 @@
-<h1>Welcome to TinyApp</h1>
+<html lang="en">
+  <head>
+    <title>TinyApp</title>
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>TinyApp</h1>
 
+      <div id="login">
+        <% if (!username) { %>
+        <h2>Please enter your username</h2>
+        <form action="/login" method="POST">
+          <input type="text" name="username">
+          <input type="submit" value="Login">
+        </form>
+        <% } else { %>
+        <h2>Welcome back, <%= username %></h2>
+        <form action="/logout" method="POST">
+          <input type="submit" value="Log Out">
+        </form>
+        <% } %>
+      </div>
+      
 
-<% if (!username) { %>
-<form action="/login" method="POST">
-  <input type="text" name="username">
-  <input type="submit" value="Login">
-</form>
-<% } else { %>
-  <h2>Welcome back, <%= username %></h2>
-  <form action="/logout" method="POST">
-    <input type="submit" value="Log Out">
-  </form>
-<% } %>
+      <div id="url-container">

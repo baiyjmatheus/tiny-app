@@ -1,22 +1,17 @@
-<html lang="en">
-  <head>
-    <title>TinyApp</title>
-  </head>
-  <body>
-    <% include partials/_header %>
+<% include partials/_header %>
 
-    <ul>
-      <% for (let url in urls) { %>
-        <li><%= url %>: <a href="<%= urls[url] %>"><%= urls[url] %></a></li>
-        <!-- Delete Button -->
-        <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
-          <!-- <input type="submit" value="Delete"> -->
-          <button>Delete</button>
-        </form>
-        <!-- Edit Button -->
-        <a href="/urls/<%= url %>">Edit</a>
-      <% } %>
-    </ul>
-  </body>
-  
-</html>
+<ul>
+  <% for (let url in urls) { %>
+    <li><%= url %>: <a href="<%= urls[url] %>"><%= urls[url] %></a></li>
+    <!-- Delete Button -->
+    <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
+      <!-- <input type="submit" value="Delete"> -->
+      <button>Delete</button>
+    </form>
+    <!-- Edit Button -->
+    <a href="/urls/<%= url %>">Edit</a>
+  <% } %>
+</ul>
+
+
+<% include partials/_footer %>

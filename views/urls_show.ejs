@@ -1,17 +1,11 @@
-<html lang="en">
-  <head>
-    <title>TinyApp</title>
-  </head>
-  <body>
-    <% include partials/_header %>
-    <ul>
-      <h3>Short URL: <%= shortURL %></h3>
-      <form action="/urls/<%= shortURL %>?_method=PUT" method="POST">
-        <input type="text" value="<%= longURL %>" name="longURL">
-        <input type="submit" value="Update">
-      </form>
-      
-    </ul>
-  </body>
-  
-</html>
+<% include partials/_header %>
+
+<ul>
+  <h3>Short URL: <%= shortURL %></h3>
+  <form action="/urls/<%= shortURL %>?_method=PUT" method="POST">
+    <input type="text" value="<%= longURL %>" name="longURL">
+    <input type="submit" value="Update">
+  </form>
+</ul>
+
+<% include partials/_footer %>

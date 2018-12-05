@@ -1,0 +1,26 @@
+/* General */
+* {
+  box-sizing: border-box;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+/* Content wrapper */
+div#wrapper {
+  max-width: 768px;
+  margin: 48px auto;
+  border-radius: 16px;
+}
+
+div#login {
+  background: #eee;
+  padding: 36px;
+  border-radius: 16px;
+}
+
+div#url-container {
+  margin-top: 48px;
+}
