@@ -62,6 +62,13 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
+app.post('/urls/:id', (req, res) => {
+  const { id } = req.params;
+  const { longURL } = req.body;
+  urlDB[id] = longURL;
+  res.redirect('/urls');
+});
+
 app.listen(PORT, () => {
   console.log(`Express server listening on ${PORT}`);
 });
