@@ -38,14 +38,11 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDB);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>');
-});
-
 app.get('/urls', (req, res) => {
   const templateVars = {
     username: req.cookies["username"],
-    urls: urlDB
+    urls: urlDB,
+    shortURL: `${req.protocol}://${req.get('host')}`
   }
   res.render('urls_index', templateVars);
 });

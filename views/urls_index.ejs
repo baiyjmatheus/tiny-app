@@ -1,8 +1,10 @@
 <% include partials/_header %>
-
+      
+<a href="/urls/new"><button class="btn">Add new URL</button></a>
+<div id="url-container">
 <% for (let url in urls) { %>
   <div id="url">
-    <h3><%= url %></h3>
+    <h3><a href="<%= shortURL %>/u/<%= url %>"><%= shortURL %>/u/<%= url %></a></h3>
     <p><a href="<%= urls[url] %>"><%= urls[url] %></a></p>
   <!-- Delete Button -->
   <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
@@ -13,5 +15,5 @@
   <a href="/urls/<%= url %>"><button class="btn">Edit</button></a>
   </div>
 <% } %>
-
+</div>
 <% include partials/_footer %>

@@ -1,9 +1,9 @@
 <% include partials/_header %>
 
+<h2>Enter a URL:</h2>
 <form action="/urls" method="POST">
-  <label for="longURL">Enter a URL:</label>
   <input type="text" name="longURL" id="longURL" placeholder="http://">
-  <input type="submit" value="Submit">
+  <button class="btn">Submit</button>
 </form>
 
 <% include partials/_footer %>
