@@ -2,11 +2,12 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-
+const cookieParser = require('cookie-parser');
 
 app.set('view engine', 'ejs');
 // middleware
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 const urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -14,7 +15,20 @@ const urlDB = {
 };
 
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.redirect('/urls');
+});
+
+// Login
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+// Logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
 });
 
 app.get('/urls.json', (req, res) => {
@@ -26,7 +40,11 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  res.render('urls_index', { urls: urlDB });
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDB
+  }
+  res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
@@ -34,8 +52,12 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  let urls = { shortURL: req.params.id, longURL: urlDB[req.params.id] };
-  res.render('urls_show', urls);
+  const templateVars = {
+    username: req.cookies["username"],
+    shortURL: req.params.id,
+    longURL: urlDB[req.params.id]
+  }
+  res.render('urls_show', templateVars);
 });
 
 app.post('/urls', (req, res) => {
