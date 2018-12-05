@@ -3,8 +3,11 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 
+
 app.set('view engine', 'ejs');
+// middleware
 app.use(bodyParser.urlencoded({extended: true}));
+
 const urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -51,6 +54,12 @@ app.get('/u/:shortURL', (req, res) => {
     res.status(404);
     res.send("Page not found");
   }
+});
+
+app.post('/urls/:id/delete', (req, res) => {
+  const { id } = req.params;
+  delete urlDB[id];
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
