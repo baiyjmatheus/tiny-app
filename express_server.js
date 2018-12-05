@@ -3,11 +3,13 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
 
 app.set('view engine', 'ejs');
 // middleware
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(methodOverride('_method'));
 
 const urlDB = {
   "b2xVn2": "http://www.lighthouselabs.ca",
