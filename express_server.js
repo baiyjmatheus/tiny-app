@@ -62,6 +62,7 @@ app.get('/urls/:id', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+// Create new URL
 app.post('/urls', (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
@@ -69,6 +70,7 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Redirects to longURL website
 app.get('/u/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
   if (urlDB[shortURL]) {
@@ -80,13 +82,15 @@ app.get('/u/:shortURL', (req, res) => {
   }
 });
 
-app.post('/urls/:id/delete', (req, res) => {
+// Delete URL
+app.delete('/urls/:id/delete', (req, res) => {
   const { id } = req.params;
   delete urlDB[id];
   res.redirect('/urls');
 });
 
-app.post('/urls/:id', (req, res) => {
+// Edit URL
+app.put('/urls/:id', (req, res) => {
   const { id } = req.params;
   const { longURL } = req.body;
   urlDB[id] = longURL;
