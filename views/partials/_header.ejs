@@ -12,12 +12,12 @@
         <h2>Please enter your username</h2>
         <form action="/login" method="POST">
           <input type="text" name="username">
-          <input type="submit" value="Login">
+          <button class="btn">Login</button>
         </form>
         <% } else { %>
         <h2>Welcome back, <%= username %></h2>
         <form action="/logout" method="POST">
-          <input type="submit" value="Log Out">
+          <button class="btn">Log Out</button>
         </form>
         <% } %>
       </div>

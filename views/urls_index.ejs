@@ -1,17 +1,17 @@
 <% include partials/_header %>
 
-<ul>
-  <% for (let url in urls) { %>
-    <li><%= url %>: <a href="<%= urls[url] %>"><%= urls[url] %></a></li>
-    <!-- Delete Button -->
-    <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
-      <!-- <input type="submit" value="Delete"> -->
-      <button>Delete</button>
-    </form>
-    <!-- Edit Button -->
-    <a href="/urls/<%= url %>">Edit</a>
-  <% } %>
-</ul>
-
+<% for (let url in urls) { %>
+  <div id="url">
+    <h3><%= url %></h3>
+    <p><a href="<%= urls[url] %>"><%= urls[url] %></a></p>
+  <!-- Delete Button -->
+  <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
+    <!-- <input type="submit" value="Delete"> -->
+    <button class="btn">Delete</button>
+  </form>
+  <!-- Edit Button -->
+  <a href="/urls/<%= url %>"><button class="btn">Edit</button></a>
+  </div>
+<% } %>
 
 <% include partials/_footer %>
