@@ -20,11 +20,13 @@ app.use(methodOverride('_method'));
 const urlDB = {
   "b2xVn2": {
     url: "http://www.lighthouselabs.ca",
-    userId: "1"
+    userId: "1",
+    counter: 0
   },
   "9sm5xK": {
     url: "http://www.google.com",
-    userId: "2"
+    userId: "2",
+    counter: 0
   }
 };
 
@@ -127,15 +129,20 @@ app.get('/urls', (req, res) => {
     const shortUrls = Object.keys(urlDB).filter(urlId => {
       return urlDB[urlId].userId === user.id;
     });
+
     const longUrls = [];
+    const counters = [];
+
     shortUrls.forEach((urlId) => {
       longUrls.push(urlDB[urlId].url);
+      counters.push(urlDB[urlId].counter);
     });
-  
+
     const templateVars = {
       user,
       shortUrls,
       longUrls,
+      counters,
       host: `${req.protocol}://${req.get('host')}`,
       
     }
@@ -178,7 +185,7 @@ app.post('/urls', (req, res) => {
   const user = users[req.session.userId];
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
-  urlDB[shortURL] = { url: longURL, userId: user.id };
+  urlDB[shortURL] = { url: longURL, userId: user.id, counter: 0 };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -187,6 +194,7 @@ app.get('/u/:shortURL', (req, res) => {
   let { shortURL } = req.params;
   if (urlDB[shortURL]) {
     let longURL = urlDB[shortURL].url;
+    urlDB[shortURL].counter += 1;
     res.redirect(longURL);
   } else {
     res.status(404);
