@@ -64,7 +64,11 @@ function authenticateUser(email, password) {
 
 
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if (req.session.userId) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // render login page
