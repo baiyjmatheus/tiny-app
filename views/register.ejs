@@ -6,12 +6,15 @@
   <body>
     <div id="wrapper">
       <h1>TinyApp</h1>
-
-      <form action="/register" method="POST">
-        <label for="email">Email</label><br>
-        <input type="email" name="email" /><br>
-        <label for="password">Password</label><br>
-        <input type="password" name="password" /><br>
-        <button class="btn">Register</button>
-      </form>
+      <h2>Register</h2>
+      <div id="register">
+        <form action="/register" method="POST">
+          <label for="email">Email</label><br>
+          <input type="email" name="email" /><br>
+          <label for="password">Password</label><br>
+          <input type="password" name="password" /><br>
+          <button class="btn">Register</button>
+        </form>
+        <p>Already registered? Click here to <a href="/login">login</a>.</p>
+      </div>
 <% include partials/_footer %>

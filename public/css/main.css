@@ -19,7 +19,8 @@ div#wrapper {
   border-radius: 16px;
 }
 
-div#login {
+div#login,
+div#register {
   background: #eee;
   padding: 36px;
   border-radius: 16px;

@@ -2,15 +2,19 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const methodOverride = require('method-override');
 const uuidv4 = require('uuidv4');
+const bcrypt = require('bcrypt');
 
 app.set('view engine', 'ejs');
 // middleware
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['lighthouselabs']
+}));
 app.use(methodOverride('_method'));
 
 const urlDB = {
@@ -25,10 +29,10 @@ const urlDB = {
 };
 
 const users = {
-  "1": {
-    id: "1", 
-    email: "a@a.com", 
-    password: "a"
+  "9950f2b3-160b-4bb3-b61c-ee5819b875b9": {
+    id: "9950f2b3-160b-4bb3-b61c-ee5819b875b9", 
+    email: "c@c.com", 
+    password: "$2b$10$UfMeytH6x81FvJeHrgW4LuzdhXgqDfXcypWd56qp5Xty8a91xLyQ2"
   },
  "2": {
     id: "2", 
@@ -51,14 +55,14 @@ function isUser(email) {
 function authenticateUser(email, password) {
   const [userId] = Object.keys(users).filter(userId => {
     return users[userId].email === email &&
-    users[userId].password === password;
+    bcrypt.compareSync(password, users[userId].password);
   });
   return userId;
 }
 
 
 app.get('/', (req, res) => {
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 // render login page
@@ -74,13 +78,13 @@ app.post('/login', (req, res) => {
   if (!userId) {
     res.status(403);
   }
-  res.cookie('userId', userId);
-  res.redirect('/');
+  req.session.userId = userId;
+  res.redirect('/urls');
 });
 
 // Logout (delete the cookie)
 app.delete('/logout', (req, res) => {
-  res.clearCookie('userId');
+  req.session = null;
   res.redirect('/urls');
 });
 
@@ -94,7 +98,7 @@ app.post('/register', (req, res) => {
   // retrieve form data
   const {email, password} = req.body;
   // Check if user exists
-  const userExists = isUser();
+  const userExists = isUser(email);
 
   // Checks if email or password are empty
   if (email === "" || password === "") {
@@ -104,12 +108,12 @@ app.post('/register', (req, res) => {
   // Checks existent email
   if (!userExists) {
     const id = uuidv4();
-    users[id] = {id, email, password};
+    users[id] = {id, email, password: bcrypt.hashSync(password, 10)};
     console.log(users);
-    res.cookie('userId', id);
+    req.session.userId = id;
     res.redirect('/urls');
   } else {
-    res.status(400);
+    res.status(400).send("User already exists");
   }
 });
 
@@ -118,7 +122,7 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   if (user) {
     const shortUrls = Object.keys(urlDB).filter(urlId => {
       return urlDB[urlId].userId === user.id;
@@ -143,7 +147,7 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   if (user) {
     const templateVars = { user };
     res.render('urls_new', templateVars);
@@ -154,7 +158,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   const { id } = req.params;
   if (urlDB[id].userId === user.id) {
     const templateVars = {
@@ -171,10 +175,10 @@ app.get('/urls/:id', (req, res) => {
 
 // Create new URL
 app.post('/urls', (req, res) => {
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
-  urlDB[shortURL] = { url: longURL, userId: user.userId };
+  urlDB[shortURL] = { url: longURL, userId: user.id };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -193,7 +197,7 @@ app.get('/u/:shortURL', (req, res) => {
 // Delete URL
 app.delete('/urls/:id/delete', (req, res) => {
   const { id } = req.params;
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   if (urlDB[id].userId === user.id) {
     delete urlDB[id];
   }
@@ -203,7 +207,7 @@ app.delete('/urls/:id/delete', (req, res) => {
 // Edit URL
 app.put('/urls/:id', (req, res) => {
   const { id } = req.params;
-  const user = users[req.cookies["userId"]];
+  const user = users[req.session.userId];
   if (urlDB[id].userId === user.id) {
     const { longURL } = req.body;
     urlDB[id].url = longURL;
