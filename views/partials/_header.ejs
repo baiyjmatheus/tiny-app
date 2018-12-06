@@ -7,17 +7,18 @@
     <div id="wrapper">
       <h1>TinyApp</h1>
 
-      <div id="login">
-        <% if (!username) { %>
-        <h2>Please enter your username</h2>
-        <form action="/login" method="POST">
-          <input type="text" name="username">
-          <button class="btn">Login</button>
-        </form>
+      <!-- Nav -->
+      <ul>
+        <% if (!user) { %>
+          <li><a href="/login"><button class='btn'>Login</button></a></li>
+          <li><a href="/register"><button class='btn'>Register</button></a></li>
         <% } else { %>
-        <h2>Welcome back, <%= username %></h2>
-        <form action="/logout?_method=DELETE" method="POST">
-          <button class="btn">Log Out</button>
-        </form>
+          <li>Hello, <%= user.email %></li>
+          <li>
+            <form action="/logout?_method=DELETE" method="POST">
+              <button class="btn">Logout</button>
+            </form>
+          </li>
         <% } %>
-      </div>
+      </ul>
+      
