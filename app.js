@@ -7,25 +7,10 @@ const methodOverride = require('method-override');
 const uuidv4 = require('uuidv4');
 const bcrypt = require('bcrypt');
 
-app.set('view engine', 'ejs');
-// middleware
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieSession({
-  name: 'session',
-  keys: ['lighthouselabs']
-}));
-app.use(methodOverride('_method'));
-
 const urlDB = {
   "b2xVn2": {
     url: "http://www.lighthouselabs.ca",
-    userId: "1",
-    counter: 0
-  },
-  "9sm5xK": {
-    url: "http://www.google.com",
-    userId: "2",
+    userId: "9950f2b3-160b-4bb3-b61c-ee5819b875b9",
     counter: 0
   }
 };
@@ -35,13 +20,8 @@ const users = {
     id: "9950f2b3-160b-4bb3-b61c-ee5819b875b9", 
     email: "c@c.com", 
     password: "$2b$10$UfMeytH6x81FvJeHrgW4LuzdhXgqDfXcypWd56qp5Xty8a91xLyQ2"
-  },
- "2": {
-    id: "2", 
-    email: "b@b.com", 
-    password: "b"
   }
-}
+};
 
 // Check if user exists
 function isUser(email) {
@@ -62,7 +42,28 @@ function authenticateUser(email, password) {
   return userId;
 }
 
+// Generates a 6-character random alphanumberic string
+function generateRandomString() {
+  const alphaNumchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  let randomStr = "";
+  for (let i = 0; i < 6; i++) {
+    let randomNum = Math.floor(Math.random() * alphaNumchars.length);
+    randomStr += alphaNumchars[randomNum];
+  }
+  return randomStr;
+}
 
+app.set('view engine', 'ejs');
+// middleware
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieSession({
+  name: 'session',
+  keys: ['lighthouselabs']
+}));
+app.use(methodOverride('_method'));
+
+// redirects to according to login status
 app.get('/', (req, res) => {
   if (req.session.userId) {
     res.redirect('/urls');
@@ -115,7 +116,6 @@ app.post('/register', (req, res) => {
   if (!userExists) {
     const id = uuidv4();
     users[id] = {id, email, password: bcrypt.hashSync(password, 10)};
-    console.log(users);
     req.session.userId = id;
     res.redirect('/urls');
   } else {
@@ -123,10 +123,7 @@ app.post('/register', (req, res) => {
   }
 });
 
-app.get('/urls.json', (req, res) => {
-  res.json(urlDB);
-});
-
+// Render all URLs of the current user
 app.get('/urls', (req, res) => {
   const user = users[req.session.userId];
   if (user) {
@@ -148,15 +145,15 @@ app.get('/urls', (req, res) => {
       longUrls,
       counters,
       host: `${req.protocol}://${req.get('host')}`,
-      
     }
     res.render('urls_index', templateVars);
   } else {
-    res.redirect("/login");
+    res.redirect('/');
   }
   
 });
 
+// Render new URL form
 app.get('/urls/new', (req, res) => {
   const user = users[req.session.userId];
   if (user) {
@@ -168,16 +165,19 @@ app.get('/urls/new', (req, res) => {
   
 });
 
+// Show url edit form by id
 app.get('/urls/:id', (req, res) => {
   const user = users[req.session.userId];
-  const { id } = req.params;
-  if (urlDB[id].userId === user.id) {
-    const templateVars = {
-      user,
-      shortURL: req.params.id,
-      longURL: urlDB[req.params.id].url
-    }
+  if (user) {
+    const { id } = req.params;
+    if (urlDB[id].userId === user.id) {
+      const templateVars = {
+        user,
+        shortURL: req.params.id,
+        longURL: urlDB[req.params.id].url
+      }
     res.render('urls_show', templateVars);
+    }
   } else {
     res.redirect("/login");
   }
@@ -230,14 +230,3 @@ app.put('/urls/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Express server listening on ${PORT}`);
 });
-
-
-function generateRandomString() {
-  const alphaNumchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-  let randomStr = "";
-  for (let i = 0; i < 6; i++) {
-    let randomNum = Math.floor(Math.random() * alphaNumchars.length);
-    randomStr += alphaNumchars[randomNum];
-  }
-  return randomStr;
-}
