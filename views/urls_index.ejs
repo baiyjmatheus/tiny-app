@@ -2,18 +2,18 @@
       
 <a href="/urls/new"><button class="btn">Add new URL</button></a>
 <div id="url-container">
-<% for (let url in urls) { %>
+<% shortUrls.forEach((shortUrl, i) => { %>
   <div id="url">
-    <h3><a href="<%= shortURL %>/u/<%= url %>"><%= shortURL %>/u/<%= url %></a></h3>
-    <p><a href="<%= urls[url] %>"><%= urls[url] %></a></p>
+    <h3><a href="<%= host %>/u/<%= shortUrl %>"><%= host %>/u/<%= shortUrl %></a></h3>
+    <p><a href="<%= longUrls[i] %>"><%= longUrls[i] %></a></p>
   <!-- Delete Button -->
-  <form action="/urls/<%= url %>/delete?_method=DELETE" method="POST">
+  <form action="/urls/<%= shortUrl %>/delete?_method=DELETE" method="POST">
     <!-- <input type="submit" value="Delete"> -->
     <button class="btn">Delete</button>
   </form>
   <!-- Edit Button -->
-  <a href="/urls/<%= url %>"><button class="btn">Edit</button></a>
+  <a href="/urls/<%= shortUrl %>"><button class="btn">Edit</button></a>
   </div>
-<% } %>
+<% }); %>
 </div>
 <% include partials/_footer %>
