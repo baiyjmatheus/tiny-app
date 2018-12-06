@@ -74,7 +74,12 @@ app.get('/', (req, res) => {
 
 // render login page
 app.get('/login', (req, res) => {
-  res.render('login');
+  if (!req.session.userId) {
+    res.render('login');
+  } else {
+    res.redirect('/urls');
+  }
+  
 });
 
 // handle login
@@ -83,7 +88,7 @@ app.post('/login', (req, res) => {
   const userId = authenticateUser(email, password);
   // If user does not exist in db
   if (!userId) {
-    res.status(403);
+    res.status(403).send("This email was not found.");
   }
   req.session.userId = userId;
   res.redirect('/urls');
@@ -97,7 +102,12 @@ app.delete('/logout', (req, res) => {
 
 // Render register form
 app.get('/register', (req, res) => {
-  res.render('register');
+  if (!req.session.userId) {
+    res.render('register');
+  } else {
+    res.redirect('/urls');
+  }
+  
 });
 
 // handle register
@@ -109,7 +119,7 @@ app.post('/register', (req, res) => {
 
   // Checks if email or password are empty
   if (email === "" || password === "") {
-    res.status(400);
+    res.status(400).send("Input(s) are/is empty.");
   }
 
   // Checks existent email
@@ -168,29 +178,36 @@ app.get('/urls/new', (req, res) => {
 // Show url edit form by id
 app.get('/urls/:id', (req, res) => {
   const user = users[req.session.userId];
-  if (user) {
-    const { id } = req.params;
-    if (urlDB[id].userId === user.id) {
-      const templateVars = {
-        user,
-        shortURL: req.params.id,
-        longURL: urlDB[req.params.id].url
-      }
-    res.render('urls_show', templateVars);
+  const { id } = req.params;
+
+  if (!user) {
+    res.status(401).send("User has to be logged in.");
+  } else if (!urlDB[id]) {
+    res.status(404).send("Page not found.");
+  } else if (urlDB[id].userId === user.id) {
+    const templateVars = {
+      user,
+      shortURL: id,
+      longURL: urlDB[id].url,
+      counter: urlDB[id].counter
     }
+    res.render('urls_show', templateVars);
   } else {
-    res.redirect("/login");
+    res.status(401).send("This URL does not belong to you.");
   }
-  
 });
 
 // Create new URL
 app.post('/urls', (req, res) => {
   const user = users[req.session.userId];
-  let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
-  urlDB[shortURL] = { url: longURL, userId: user.id, counter: 0 };
-  res.redirect(`/urls/${shortURL}`);
+  if (user) {
+    let shortURL = generateRandomString();
+    let longURL = req.body.longURL;
+    urlDB[shortURL] = { url: longURL, userId: user.id, counter: 0 };
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.status(401).send("Not authorized");
+  }
 });
 
 // Redirects to longURL website
@@ -201,17 +218,21 @@ app.get('/u/:shortURL', (req, res) => {
     urlDB[shortURL].counter += 1;
     res.redirect(longURL);
   } else {
-    res.status(404);
-    res.send("Page not found");
+    res.status(404).send("Page not found");
   }
 });
 
 // Delete URL
 app.delete('/urls/:id/delete', (req, res) => {
+  const { userId } = req.session;
   const { id } = req.params;
-  const user = users[req.session.userId];
-  if (urlDB[id].userId === user.id) {
+
+  if (!userId) {
+    res.status(401).send("User has to be logged in");
+  } else if (userId && urlDB[id].userId === userId) {
     delete urlDB[id];
+  } else {
+    res.status(403).send("User does not own the URL");
   }
   res.redirect('/urls');
 });
