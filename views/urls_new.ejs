@@ -1,6 +1,8 @@
 <% include partials/_header %>
 
-<h2>Enter a URL:</h2>
+<a href="/urls"><button class="btn">View All</button></a>
+
+<h2>Enter a new URL:</h2>
 <form action="/urls" method="POST">
   <input type="text" name="longURL" id="longURL" placeholder="http://">
   <button class="btn">Submit</button>

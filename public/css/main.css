@@ -27,7 +27,7 @@ div#login {
 }
 
 /* div#login input[type="text"] { */
-input[type="text"] {
+input {
   width: 320px;
   padding: 7px 0;
 }

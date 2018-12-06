@@ -17,6 +17,19 @@ const urlDB = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "1": {
+    id: "1", 
+    email: "matheus@example.com", 
+    password: "password"
+  },
+ "2": {
+    id: "2", 
+    email: "max@example.com", 
+    password: "password"
+  }
+}
+
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
@@ -28,10 +41,15 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-// Logout
-app.post('/logout', (req, res) => {
+// Logout (delete the cookie)
+app.delete('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('/urls');
+});
+
+// Register page
+app.get('/register', (req, res) => {
+  res.render('register');
 });
 
 app.get('/urls.json', (req, res) => {
