@@ -158,7 +158,7 @@ app.get('/urls', (req, res) => {
     }
     res.render('urls_index', templateVars);
   } else {
-    res.redirect('/');
+    res.status(401).send("User has to be logged in.");
   }
   
 });
@@ -241,11 +241,17 @@ app.delete('/urls/:id/delete', (req, res) => {
 app.put('/urls/:id', (req, res) => {
   const { id } = req.params;
   const user = users[req.session.userId];
-  if (urlDB[id].userId === user.id) {
-    const { longURL } = req.body;
-    urlDB[id].url = longURL;
+  if (user) {
+    if (urlDB[id].userId === user.id) {
+      const { longURL } = req.body;
+      urlDB[id].url = longURL;
+      res.redirect('/urls');
+    } else {
+      res.status(403).send("User does not own the URL");
+    }
+  } else {
+    res.status(401).send("Not authorized");
   }
-  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
