@@ -97,7 +97,7 @@ app.post('/login', (req, res) => {
 // Logout (delete the cookie)
 app.delete('/logout', (req, res) => {
   req.session = null;
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 // Render register form
