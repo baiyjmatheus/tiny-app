@@ -89,9 +89,10 @@ app.post('/login', (req, res) => {
   // If user does not exist in db
   if (!userId) {
     res.status(403).send("This email was not found.");
+  } else {
+    req.session.userId = userId;
+    res.redirect('/urls');
   }
-  req.session.userId = userId;
-  res.redirect('/urls');
 });
 
 // Logout (delete the cookie)
@@ -120,16 +121,16 @@ app.post('/register', (req, res) => {
   // Checks if email or password are empty
   if (email === "" || password === "") {
     res.status(400).send("Input(s) are/is empty.");
-  }
-
-  // Checks existent email
-  if (!userExists) {
-    const id = uuidv4();
-    users[id] = {id, email, password: bcrypt.hashSync(password, 10)};
-    req.session.userId = id;
-    res.redirect('/urls');
   } else {
-    res.status(400).send("User already exists");
+    // Checks existent email
+    if (!userExists) {
+      const id = uuidv4();
+      users[id] = {id, email, password: bcrypt.hashSync(password, 10)};
+      req.session.userId = id;
+      res.redirect('/urls');
+    } else {
+      res.status(400).send("User already exists");
+    }
   }
 });
 
