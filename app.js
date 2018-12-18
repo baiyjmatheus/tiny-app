@@ -204,6 +204,11 @@ app.post('/urls', (req, res) => {
   if (user) {
     let shortURL = generateRandomString();
     let longURL = req.body.longURL;
+
+    if (longURL.search(/^http.:\/\//) === -1) {
+      longURL = `http://${longURL}`;
+    }
+    console.log(longURL);
     urlDB[shortURL] = { url: longURL, userId: user.id, counter: 0 };
     res.redirect(`/urls/${shortURL}`);
   } else {
